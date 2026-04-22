@@ -1,0 +1,2 @@
+class InGameHudUiElement:
+    pass
