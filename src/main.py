@@ -36,6 +36,10 @@ def main() -> None:
                 runtime.screen = screen
 
             elif show_menu:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE and runtime.has_started and runtime.lives.number > 0:
+                        menu.state = "menu"
+                        runtime.toggle_pause()
                 action = menu.handle_event(event, menu_started)
                 if action == "start":
                     menu.state = "menu"
@@ -59,7 +63,7 @@ def main() -> None:
                     from game.enemies.systems import spawn_enemy
                     from game.enemies.movement.components import EnemySpawnPoint
                     demo = spawn_enemy(
-                        "best",
+                        MenuOverlay.DEMO_WORD,
                         screen.get_width(),
                         screen.get_height(),
                         runtime.indicators.enemy_base_speed,
@@ -68,10 +72,6 @@ def main() -> None:
                     runtime.enemies.append(demo)
                 elif action == "exit":
                     running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE and runtime.has_started and runtime.lives.number > 0:
-                        menu.state = "menu"
-                        runtime.toggle_pause()
 
             else:
                 if event.type == pygame.KEYDOWN:

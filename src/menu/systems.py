@@ -11,6 +11,7 @@ class MenuOverlay:
     BANNER_W_RATIO = 0.22
     BANNER_H_RATIO = 0.58
     HOWTO_H_RATIO = 0.72
+    DEMO_WORD = "best"
 
     _INSTRUCTIONS = [
         "The goal of the game is to prevent",
@@ -113,7 +114,7 @@ class MenuOverlay:
             screen.blit(surf, (text_x, text_y))
             text_y += surf.get_height() + 4
 
-        demo_word = "best"
+        demo_word = self.DEMO_WORD
         word_surf = self._btn_font.render(demo_word, True, (255, 255, 255))
         demo_word_x = bx + bw // 2 - word_surf.get_width() // 2
         demo_word_y = by + int(bh * 0.50)
