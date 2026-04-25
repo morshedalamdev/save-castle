@@ -46,6 +46,8 @@ class GameRuntime:
         self.has_started = False
         self.paused = False
 
+        self.hud_banner = pygame.image.load((self.asset_root / "ui" / "hud" / "hud_banner.png").as_posix()).convert_alpha()
+
         self.font = pygame.font.SysFont("arial", 34)
         self.hud_font = pygame.font.SysFont("arial", 32)
 
@@ -70,6 +72,18 @@ class GameRuntime:
         self.enemies.extend(
             spawn_boss_wave(self.words, self.indicators.round_number, self.screen.get_width(), self.screen.get_height(), self.indicators.enemy_base_speed)
         )
+
+    def restart(self) -> None:
+        self.indicators = RoundIndicators()
+        self.lives = NumberOfLivesLeft()
+        self.spawn_timer = EnemySpawnTimer()
+        self.enemies = []
+        self.typing_ids = set()
+        self.explosions = []
+        self.in_round = False
+        self.has_started = False
+        self.paused = False
+        self.castle_image = self._load_random_castle()
 
     def toggle_pause(self) -> None:
         self.paused = not self.paused
@@ -170,4 +184,4 @@ class GameRuntime:
             draw_enemy(self.screen, enemy, self.enemy_assets, self.font)
         draw_explosions(self.screen, self.explosions, self.explosion_sheet)
 
-        draw_hud(self.screen, self.hud_font, self.indicators, self.lives.number, self.in_round)
+        draw_hud(self.screen, self.hud_font, self.indicators, self.lives.number, self.in_round, self.hud_banner)
