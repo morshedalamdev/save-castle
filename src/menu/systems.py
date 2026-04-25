@@ -8,7 +8,7 @@ import pygame
 class MenuOverlay:
     """Sprite-based menu overlay with scroll banner and button images."""
 
-    BANNER_W_RATIO = 0.22
+    BANNER_W_RATIO = 0.38
     BANNER_H_RATIO = 0.58
     HOWTO_H_RATIO = 0.72
     DEMO_WORD = "best"
@@ -108,7 +108,7 @@ class MenuOverlay:
         self, screen: pygame.Surface, bx: int, by: int, bw: int, bh: int
     ) -> None:
         text_x = bx + int(bw * 0.07)
-        text_y = by + int(bh * 0.07)
+        text_y = by + int(bh * 0.10)
         for line in self._INSTRUCTIONS:
             surf = self._body_font.render(line, True, (255, 255, 255))
             screen.blit(surf, (text_x, text_y))
@@ -117,12 +117,12 @@ class MenuOverlay:
         demo_word = self.DEMO_WORD
         word_surf = self._btn_font.render(demo_word, True, (255, 255, 255))
         demo_word_x = bx + bw // 2 - word_surf.get_width() // 2
-        demo_word_y = by + int(bh * 0.50)
+        demo_word_y = text_y + int(bh * 0.03)
         screen.blit(word_surf, (demo_word_x, demo_word_y))
 
         frame_w, frame_h = 32, 32
         sprite = self._mushroom_sheet.subsurface(pygame.Rect(0, 0, frame_w, frame_h))
-        scale = max(2.0, bw / 192 * 1.4)
+        scale = max(2.0, bw / 300 * 2.0)
         scaled = pygame.transform.scale(sprite, (int(frame_w * scale), int(frame_h * scale)))
         enemy_x = bx + bw // 2 - scaled.get_width() // 2
         enemy_y = demo_word_y + word_surf.get_height() + 4

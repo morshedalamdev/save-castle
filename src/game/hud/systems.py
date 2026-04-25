@@ -10,6 +10,7 @@ def draw_hud(
     lives: int,
     in_round: bool,
     hud_banner: pygame.Surface | None = None,
+    settings_bg: pygame.Surface | None = None,
 ) -> None:
     sw, sh = screen.get_size()
 
@@ -36,6 +37,22 @@ def draw_hud(
     for text in texts:
         screen.blit(text, (x, y))
         x += text.get_width() + gap
+
+    if settings_bg is not None:
+        diff_name = indicators.difficulty.value
+        diff_font = pygame.font.SysFont("courier", 20, bold=True)
+        diff_surf = diff_font.render(diff_name, True, (255, 255, 255))
+        padding = 12
+        bg_w = max(diff_surf.get_width() + padding * 2, 80)
+        bg_h = max(diff_surf.get_height() + padding * 2, 60)
+        bg_x = sw - bg_w - 8
+        bg_y = 8
+        scaled_bg = pygame.transform.scale(settings_bg, (bg_w, bg_h))
+        screen.blit(scaled_bg, (bg_x, bg_y))
+        screen.blit(
+            diff_surf,
+            (bg_x + bg_w // 2 - diff_surf.get_width() // 2, bg_y + bg_h // 2 - diff_surf.get_height() // 2),
+        )
 
     if not in_round:
         msg = "Press SPACE to start next round"
