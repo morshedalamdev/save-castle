@@ -14,7 +14,7 @@ WINDOW_HEIGHT = 1080
 
 def main() -> None:
     pygame.init()
-    pygame.display.set_caption("Typing Defense")
+    pygame.display.set_caption("Save Castle")
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
     clock = pygame.time.Clock()
     root = Path(__file__).resolve().parent.parent
