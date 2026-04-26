@@ -38,6 +38,7 @@ class MenuOverlay:
         self.state = "menu"
         self._btn_font = pygame.font.SysFont("courier", 22, bold=True)
         self._body_font = pygame.font.SysFont("courier", 19)
+        self._demo_font = pygame.font.SysFont("courier", 48, bold=True)
         self._button_rects: dict[str, pygame.Rect] = {}
 
     # ------------------------------------------------------------------
@@ -111,7 +112,7 @@ class MenuOverlay:
             text_y += surf.get_height() + 4
 
         demo_word = self.DEMO_WORD
-        word_surf = self._btn_font.render(demo_word, True, (255, 255, 255))
+        word_surf = self._demo_font.render(demo_word, True, (255, 255, 255))
         demo_word_x = bx + bw // 2 - word_surf.get_width() // 2
         demo_word_y = text_y + int(bh * 0.03)
         screen.blit(word_surf, (demo_word_x, demo_word_y))
