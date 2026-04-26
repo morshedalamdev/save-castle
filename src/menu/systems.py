@@ -9,8 +9,8 @@ class MenuOverlay:
     """Sprite-based menu overlay with scroll banner and button images."""
 
     BANNER_W_RATIO = 0.38
-    BANNER_H_RATIO = 0.58
-    HOWTO_H_RATIO = 0.72
+    BANNER_H_RATIO = 0.78
+    HOWTO_H_RATIO = 0.90
     DEMO_WORD = "best"
 
     _INSTRUCTIONS = [
@@ -86,7 +86,7 @@ class MenuOverlay:
         btn_x = bx + (bw - btn_w) // 2
 
         content_start = by + int(bh * 0.20)
-        content_h = int(bh * 0.62)
+        content_h = int(bh * 0.57)
         slot_h = content_h // 3
 
         for i, (label, action) in enumerate(zip(labels, actions)):
