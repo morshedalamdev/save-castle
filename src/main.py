@@ -91,6 +91,15 @@ def main() -> None:
                     else:
                         if event.unicode and event.unicode.isalpha() and runtime.in_round and not runtime.paused:
                             runtime.handle_letter(event.unicode.lower())
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    _difficulties = [Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD]
+                    _rects = runtime.hud_button_rects
+                    if "difficulty_plus" in _rects and _rects["difficulty_plus"].collidepoint(event.pos):
+                        idx = _difficulties.index(runtime.indicators.difficulty)
+                        runtime.set_difficulty(_difficulties[(idx + 1) % len(_difficulties)])
+                    elif "difficulty_minus" in _rects and _rects["difficulty_minus"].collidepoint(event.pos):
+                        idx = _difficulties.index(runtime.indicators.difficulty)
+                        runtime.set_difficulty(_difficulties[(idx - 1) % len(_difficulties)])
 
         runtime.update(dt)
         runtime.draw()

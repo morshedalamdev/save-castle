@@ -48,6 +48,11 @@ class GameRuntime:
 
         self.hud_banner = pygame.image.load((self.asset_root / "ui" / "hud" / "hud_banner.png").as_posix()).convert_alpha()
         self.settings_bg = pygame.image.load((self.asset_root / "ui" / "settings" / "settings_background.png").as_posix()).convert_alpha()
+        self.plus_img = pygame.image.load((self.asset_root / "ui" / "settings" / "plus.png").as_posix()).convert_alpha()
+        self.minus_img = pygame.image.load((self.asset_root / "ui" / "settings" / "minus.png").as_posix()).convert_alpha()
+        self.close_img = pygame.image.load((self.asset_root / "ui" / "settings" / "close.png").as_posix()).convert_alpha()
+
+        self.hud_button_rects: dict[str, pygame.Rect] = {}
 
         self.font = pygame.font.SysFont("arial", 34)
         self.hud_font = pygame.font.SysFont("arial", 32)
@@ -185,4 +190,7 @@ class GameRuntime:
             draw_enemy(self.screen, enemy, self.enemy_assets, self.font)
         draw_explosions(self.screen, self.explosions, self.explosion_sheet)
 
-        draw_hud(self.screen, self.hud_font, self.indicators, self.lives.number, self.in_round, self.hud_banner, self.settings_bg)
+        self.hud_button_rects = draw_hud(
+            self.screen, self.hud_font, self.indicators, self.lives.number, self.in_round,
+            self.hud_banner, self.settings_bg, self.plus_img, self.minus_img, self.close_img,
+        )
