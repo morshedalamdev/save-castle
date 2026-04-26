@@ -66,6 +66,10 @@ class MenuOverlay:
             self._draw_howtoplay(screen, bx, by, bw, bh)
         else:
             self._draw_main_buttons(screen, bx, by, bw, bh, started)
+            # "Press F11 for full screen. Even in browser." — bottom-centre of screen
+            f11_font = pygame.font.SysFont("courier", 22, bold=False)
+            f11_surf = f11_font.render("Press F11 for full screen. Even in browser.", True, (255, 255, 255))
+            screen.blit(f11_surf, (sw // 2 - f11_surf.get_width() // 2, sh - f11_surf.get_height() - int(sh * 0.02)))
 
     # ------------------------------------------------------------------
     def _draw_main_buttons(
