@@ -9,7 +9,7 @@ class MenuOverlay:
     """Sprite-based menu overlay with scroll banner and button images."""
 
     BANNER_W_RATIO = 0.38
-    BANNER_H_RATIO = 0.78
+    BANNER_H_RATIO = 0.72
     HOWTO_H_RATIO = 0.90
     DEMO_WORD = "best"
 
@@ -50,10 +50,6 @@ class MenuOverlay:
 
     # ------------------------------------------------------------------
     def draw(self, screen: pygame.Surface, started: bool) -> None:
-        shade = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-        shade.fill((0, 0, 0, 130))
-        screen.blit(shade, (0, 0))
-
         sw, sh = screen.get_size()
         bw = int(sw * self.BANNER_W_RATIO)
         h_ratio = self.HOWTO_H_RATIO if self.state == "howtoplay" else self.BANNER_H_RATIO
