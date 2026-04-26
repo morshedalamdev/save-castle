@@ -9,7 +9,7 @@ class MenuOverlay:
     """Sprite-based menu overlay with scroll banner and button images."""
 
     BANNER_W_RATIO = 0.38
-    BANNER_H_RATIO = 0.78
+    BANNER_H_RATIO = 0.72
     HOWTO_H_RATIO = 0.90
     DEMO_WORD = "best"
 
@@ -38,6 +38,7 @@ class MenuOverlay:
         self.state = "menu"
         self._btn_font = pygame.font.SysFont("courier", 22, bold=True)
         self._body_font = pygame.font.SysFont("courier", 19)
+        self._demo_font = pygame.font.SysFont("courier", 48, bold=True)
         self._button_rects: dict[str, pygame.Rect] = {}
 
     # ------------------------------------------------------------------
@@ -50,10 +51,6 @@ class MenuOverlay:
 
     # ------------------------------------------------------------------
     def draw(self, screen: pygame.Surface, started: bool) -> None:
-        shade = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-        shade.fill((0, 0, 0, 130))
-        screen.blit(shade, (0, 0))
-
         sw, sh = screen.get_size()
         bw = int(sw * self.BANNER_W_RATIO)
         h_ratio = self.HOWTO_H_RATIO if self.state == "howtoplay" else self.BANNER_H_RATIO
@@ -69,6 +66,10 @@ class MenuOverlay:
             self._draw_howtoplay(screen, bx, by, bw, bh)
         else:
             self._draw_main_buttons(screen, bx, by, bw, bh, started)
+            # "Press F11 for full screen. Even in browser." — bottom-centre of screen
+            f11_font = pygame.font.SysFont("courier", 22, bold=False)
+            f11_surf = f11_font.render("Press F11 for full screen. Even in browser.", True, (255, 255, 255))
+            screen.blit(f11_surf, (sw // 2 - f11_surf.get_width() // 2, sh - f11_surf.get_height() - int(sh * 0.02)))
 
     # ------------------------------------------------------------------
     def _draw_main_buttons(
@@ -115,7 +116,7 @@ class MenuOverlay:
             text_y += surf.get_height() + 4
 
         demo_word = self.DEMO_WORD
-        word_surf = self._btn_font.render(demo_word, True, (255, 255, 255))
+        word_surf = self._demo_font.render(demo_word, True, (255, 255, 255))
         demo_word_x = bx + bw // 2 - word_surf.get_width() // 2
         demo_word_y = text_y + int(bh * 0.03)
         screen.blit(word_surf, (demo_word_x, demo_word_y))
