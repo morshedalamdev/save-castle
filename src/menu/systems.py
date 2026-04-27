@@ -9,7 +9,7 @@ class MenuOverlay:
     """Sprite-based menu overlay with scroll banner and button images."""
 
     BANNER_W_RATIO = 0.38
-    BANNER_H_RATIO = 0.72
+    BANNER_H_RATIO = 0.80
     HOWTO_H_RATIO = 0.90
     DEMO_WORD = "best"
 
@@ -40,6 +40,7 @@ class MenuOverlay:
         self._body_font = pygame.font.SysFont("courier", 19)
         self._demo_font = pygame.font.SysFont("courier", 48, bold=True)
         self._button_rects: dict[str, pygame.Rect] = {}
+        self.leaderboard_entries: list[dict] = []
 
     # ------------------------------------------------------------------
     def handle_event(self, event: pygame.event.Event, started: bool) -> str | None:
@@ -53,7 +54,12 @@ class MenuOverlay:
     def draw(self, screen: pygame.Surface, started: bool) -> None:
         sw, sh = screen.get_size()
         bw = int(sw * self.BANNER_W_RATIO)
-        h_ratio = self.HOWTO_H_RATIO if self.state == "howtoplay" else self.BANNER_H_RATIO
+        if self.state == "howtoplay":
+            h_ratio = self.HOWTO_H_RATIO
+        elif self.state == "leaderboard":
+            h_ratio = self.BANNER_H_RATIO
+        else:
+            h_ratio = self.BANNER_H_RATIO
         bh = int(sh * h_ratio)
         bx = sw // 2 - bw // 2
         by = sh // 2 - bh // 2
@@ -64,6 +70,8 @@ class MenuOverlay:
         self._button_rects.clear()
         if self.state == "howtoplay":
             self._draw_howtoplay(screen, bx, by, bw, bh)
+        elif self.state == "leaderboard":
+            self._draw_leaderboard(screen, bx, by, bw, bh)
         else:
             self._draw_main_buttons(screen, bx, by, bw, bh, started)
             # "Press F11 for full screen. Even in browser." — bottom-centre of screen
@@ -76,19 +84,19 @@ class MenuOverlay:
         self, screen: pygame.Surface, bx: int, by: int, bw: int, bh: int, started: bool
     ) -> None:
         if started:
-            labels = ["Resume Game", "How to play", "Restart"]
-            actions = ["resume", "howtoplay", "restart"]
+            labels = ["Resume Game", "Leaderboard", "How to play", "Restart"]
+            actions = ["resume", "leaderboard", "howtoplay", "restart"]
         else:
-            labels = ["Start Game", "How to play", "Exit"]
-            actions = ["start", "howtoplay", "exit"]
+            labels = ["Start Game", "Leaderboard", "How to play", "Exit"]
+            actions = ["start", "leaderboard", "howtoplay", "exit"]
 
         btn_w = int(bw * 0.82)
-        btn_h = int(bh * 0.13)
+        btn_h = int(bh * 0.11)
         btn_x = bx + (bw - btn_w) // 2
 
-        content_start = by + int(bh * 0.20)
-        content_h = int(bh * 0.57)
-        slot_h = content_h // 3
+        content_start = by + int(bh * 0.18)
+        content_h = int(bh * 0.62)
+        slot_h = content_h // 4
 
         for i, (label, action) in enumerate(zip(labels, actions)):
             btn_y = content_start + slot_h * i + (slot_h - btn_h) // 2
@@ -152,3 +160,57 @@ class MenuOverlay:
             surf = self._body_font.render(hint, True, (255, 255, 255))
             screen.blit(surf, (bx + int(bw * 0.05), hint_y))
             hint_y += surf.get_height() + 3
+
+    # ------------------------------------------------------------------
+    def _draw_leaderboard(
+        self, screen: pygame.Surface, bx: int, by: int, bw: int, bh: int
+    ) -> None:
+        title_font = pygame.font.SysFont("courier", 24, bold=True)
+        header_font = pygame.font.SysFont("courier", 18, bold=True)
+        row_font = pygame.font.SysFont("courier", 17)
+
+        # Title
+        title_surf = title_font.render("Leaderboard", True, (255, 215, 0))
+        screen.blit(title_surf, (bx + bw // 2 - title_surf.get_width() // 2, by + int(bh * 0.07)))
+
+        # Column headers
+        col_rank_x = bx + int(bw * 0.05)
+        col_time_x = bx + int(bw * 0.18)
+        col_score_x = bx + int(bw * 0.72)
+        header_y = by + int(bh * 0.17)
+
+        screen.blit(header_font.render("#", True, (200, 200, 200)), (col_rank_x, header_y))
+        screen.blit(header_font.render("Date & Time", True, (200, 200, 200)), (col_time_x, header_y))
+        screen.blit(header_font.render("Score", True, (200, 200, 200)), (col_score_x, header_y))
+
+        # Divider line
+        div_y = header_y + header_font.size("A")[1] + 4
+        pygame.draw.line(screen, (180, 180, 180), (bx + int(bw * 0.04), div_y), (bx + bw - int(bw * 0.04), div_y), 1)
+
+        row_y = div_y + 6
+        row_h = row_font.size("A")[1] + 5
+        max_visible = 10
+
+        entries = self.leaderboard_entries[:max_visible]
+        if entries:
+            for i, entry in enumerate(entries):
+                rank_color = (255, 215, 0) if i == 0 else (200, 200, 200)
+                screen.blit(row_font.render(str(i + 1), True, rank_color), (col_rank_x, row_y))
+                screen.blit(row_font.render(entry.get("time", ""), True, (220, 220, 220)), (col_time_x, row_y))
+                screen.blit(row_font.render(str(entry.get("score", 0)), True, (255, 255, 100)), (col_score_x, row_y))
+                row_y += row_h
+        else:
+            no_entry = self._body_font.render("No scores yet. Play a game!", True, (200, 200, 200))
+            screen.blit(no_entry, (bx + bw // 2 - no_entry.get_width() // 2, row_y + int(bh * 0.05)))
+
+        # Back button
+        btn_w = int(bw * 0.42)
+        btn_h = int(bh * 0.09)
+        btn_x = bx + (bw - btn_w) // 2
+        btn_y = by + bh - int(bh * 0.14)
+        rect = pygame.Rect(btn_x, btn_y, btn_w, btn_h)
+        self._button_rects["back"] = rect
+        btn_img = pygame.transform.scale(self._btn_raw, (btn_w, btn_h))
+        screen.blit(btn_img, rect.topleft)
+        text = self._btn_font.render("Back", True, (255, 255, 255))
+        screen.blit(text, (rect.centerx - text.get_width() // 2, rect.centery - text.get_height() // 2))

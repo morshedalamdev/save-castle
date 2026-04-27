@@ -7,6 +7,7 @@ import pygame
 from game.runtime import GameRuntime
 from menu.systems import MenuOverlay
 from game.rounds_and_indicators.resources import Difficulty
+from leaderboard import load_scores, save_score
 
 WINDOW_WIDTH = 1920
 WINDOW_HEIGHT = 1080
@@ -20,12 +21,20 @@ def main() -> None:
     root = Path(__file__).resolve().parent.parent
     runtime = GameRuntime(root, screen)
     menu = MenuOverlay(root / "assets")
+    menu.leaderboard_entries = load_scores(root)
+
+    _game_over_saved = False  # track whether the current run's score has been saved
 
     running = True
     while running:
         dt = clock.tick(60) / 1000.0
         show_menu = not runtime.has_started or runtime.paused or runtime.lives.number <= 0
         menu_started = runtime.has_started and runtime.paused and runtime.lives.number > 0
+
+        # Detect game-over transition and save score once per run
+        if runtime.has_started and runtime.lives.number <= 0 and not _game_over_saved:
+            menu.leaderboard_entries = save_score(root, runtime.indicators.score)
+            _game_over_saved = True
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,6 +56,7 @@ def main() -> None:
                         runtime.restart()
                     runtime.paused = False
                     runtime.start_next_round()
+                    _game_over_saved = False
                 elif action == "resume":
                     menu.state = "menu"
                     runtime.toggle_pause()
@@ -54,6 +64,9 @@ def main() -> None:
                     menu.state = "menu"
                     runtime.restart()
                     runtime.start_next_round()
+                    _game_over_saved = False
+                elif action == "leaderboard":
+                    menu.state = "leaderboard"
                 elif action == "howtoplay":
                     menu.state = "howtoplay"
                 elif action == "back":
